@@ -40,7 +40,11 @@ func getUserInput() (string, float64, string) {
 	}
 	for {
 		fmt.Println("Введите исходную сумму: ")
-		fmt.Scan(&originalAmount)
+		_, err := fmt.Scan(&originalAmount)
+		if err != nil {
+			fmt.Println("Ошибка ввода, попробуйте еще раз")
+			continue
+		}
 		if originalAmount > 0 {
 			break
 		} else {
