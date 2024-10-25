@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const usdToEur = 0.92
 const usdToRub = 97.0
@@ -9,19 +11,11 @@ const eurToRub = usdToEur * usdToRub
 func main() {
 	userName := getUserName()
 	fmt.Println("Привет,", userName)
-	var originalAmount float64
-	var originalCurrency string
-	var targetCurrency string
-	fmt.Println("Введите исходную сумму: ")
-	fmt.Scan(&originalAmount)
-	fmt.Println("Введите исходную валюту (USD или EUR): ")
-	fmt.Scan(&originalCurrency)
-	fmt.Println("Введите целевую валюту (USD или EUR): ")
-	fmt.Scan(&targetCurrency)
-	targetAmount := calculateCurrency(originalAmount, originalCurrency, targetCurrency)
-	fmt.Println(targetAmount)
+	originalCurrency, originalAmount, targetCurrency := getUserInput()
 
-	fmt.Println("EUR в RUB:", eurToRub)
+	targetAmount := calculateCurrency(originalCurrency, originalAmount, targetCurrency)
+
+	fmt.Printf("Целевая сумма: %.2f %s\n", targetAmount, targetCurrency)
 }
 
 func getUserName() string {
@@ -31,6 +25,54 @@ func getUserName() string {
 	return userName
 }
 
-func calculateCurrency(originalAmount float64, originalCurrency string, targetCurrency string) float64 {
-	return originalAmount
+func getUserInput() (string, float64, string) {
+	var originalCurrency string
+	var originalAmount float64
+	var targetCurrency string
+	for {
+		fmt.Println("Введите исходную валюту (USD или EUR): ")
+		fmt.Scan(&originalCurrency)
+		if originalCurrency == "USD" || originalCurrency == "EUR" {
+			break
+		} else {
+			fmt.Println("Некорректная исходная валюта")
+		}
+	}
+	for {
+		fmt.Println("Введите исходную сумму: ")
+		fmt.Scan(&originalAmount)
+		if originalAmount > 0 {
+			break
+		} else {
+			fmt.Println("Некорректная сумма")
+		}
+	}
+	for {
+		var helpCurrency string
+		if originalCurrency == "USD" {
+			helpCurrency = "EUR"
+		} else {
+			helpCurrency = "USD"
+		}
+		fmt.Printf("Введите целевую валюту (%v): \n", helpCurrency)
+		fmt.Scan(&targetCurrency)
+		if (targetCurrency == "USD" || targetCurrency == "EUR") && targetCurrency != originalCurrency {
+			break
+		} else {
+			fmt.Println("Некорректная целевая валюта")
+		}
+	}
+
+	return originalCurrency, originalAmount, targetCurrency
+}
+
+func calculateCurrency(originalCurrency string, originalAmount float64, targetCurrency string) float64 {
+	var targetAmount float64
+	if originalCurrency == "USD" {
+		targetAmount = originalAmount * usdToEur
+	} else {
+		targetAmount = originalAmount / usdToEur
+	}
+
+	return targetAmount
 }
